@@ -1,4 +1,28 @@
-xxxxxxxxxxxx
-
-
-abcd dddddx
+on:
+  push:
+    branches:
+      - main
+      - feature/**
+  pull_request:
+     branches: ["feature/**"] 
+     types: [opened, reopened]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set-up JDK v17
+      uses: actions/setup-java@v1
+      with:
+          java-version: 17
+          distribution: 'zulu'
+    - name: change file permission to make executables
+      run: chmod u+x ~/work/Sonarqube-demo-new/Sonarqube-demo-new/mvnw
+    - name: Analyze withh SonarCloud
+      run: ./mvnw -B verify sonar:sonar -Dsonar.projectKey=makarandsolke_sonarcloud-demo -Dsonar.organization=makarandsolke -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=$SONAR_TOKEN
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  shared: 
+    name: Shared Library Example
+    uses: makarandsolke/sharedLibrary/.github/workflows/sharedlib.yml@main
